@@ -1,0 +1,5 @@
+.vscode
+coco128
+VOCdevkit
+kmeans*
+*csv
