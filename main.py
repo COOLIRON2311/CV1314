@@ -13,7 +13,7 @@ def decode_array(s: str):
     return np.frombuffer(b, dtype=np.float64)
 
 
-def img_path_to_bovw(image: np.ndarray) -> np.ndarray:
+def img_path_to_bovw(image: np.ndarray, kmeans: KMeans, sift: cv2.SIFT) -> np.ndarray:
     # Get SIFT descriptors
     _, descriptors = sift.detectAndCompute(image, None)
     predictions = kmeans.predict(descriptors)
@@ -34,7 +34,7 @@ kmeans: KMeans = joblib.load('kmeans_1000_512.joblib')
 sift = cv2.SIFT.create()
 
 # Load database from disk
-df = pd.read_csv('export_1.csv', index_col=0)
+df = pd.read_csv('db.csv', index_col=0)
 df['vector'] = df['vector'].map(decode_array)
 
 # Initialize Nearest Neighbors
@@ -52,8 +52,9 @@ if file is not None:
     cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)
     st.image(img)
 
+    st.title('10 most similar images')
     # Compute visual bovw for image
-    target = img_path_to_bovw(img)
+    target = img_path_to_bovw(img, kmeans, sift)
     # Find 10 most similar images
     _, indices = neighbors.kneighbors([target], n_neighbors=10)
     # Display results
