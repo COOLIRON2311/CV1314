@@ -16,6 +16,10 @@ def decode_array(s: str):
 def img_path_to_bovw(image: np.ndarray, kmeans: KMeans, sift: cv2.SIFT) -> np.ndarray:
     # Get SIFT descriptors
     _, descriptors = sift.detectAndCompute(image, None)
+    if descriptors is None:
+        default_hist = np.zeros(kmeans.n_clusters)
+        default_hist[:] = 1 / kmeans.n_clusters
+        return default_hist
     predictions = kmeans.predict(descriptors)
 
     # Compute histogram
